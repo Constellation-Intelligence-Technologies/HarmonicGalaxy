@@ -1,6 +1,6 @@
-# HarmonicGalaxy 安装和使用指南
+# HarmonicGalaxy 安装指南
 
-本文档说明如何在其他项目中引入和使用 HarmonicGalaxy 框架。
+本文档介绍如何在其他项目中引入和使用 HarmonicGalaxy 框架。
 
 ## 安装方式
 
@@ -9,10 +9,10 @@
 如果项目还未发布到 PyPI，可以从 GitHub 直接安装：
 
 ```bash
-pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git
 ```
 
-或者安装特定分支/标签：
+安装特定分支：
 
 ```bash
 # 安装 dev 分支
@@ -20,33 +20,51 @@ pip install git+https://github.com/Constellation-Intelligence-Technologies/Harmo
 
 # 安装 master 分支
 pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@master
+```
 
-# 安装特定版本（发布后）
+安装特定版本（当有 tag 时）：
+
+```bash
 pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@v0.1.0
 ```
 
-### 方式 2: 从本地路径安装（开发阶段）
+### 方式 2: 从 PyPI 安装（发布后）
 
-如果你在本地开发 HarmonicGalaxy，可以在其他项目中直接安装本地版本：
+当项目发布到 PyPI 后：
 
 ```bash
-# 安装本地开发版本（可编辑模式）
-pip install -e /path/to/HarmonicGalaxy
-
-# 或者使用相对路径
-pip install -e ../HarmonicGalaxy
+pip install harmonicgalaxy
 ```
 
-### 方式 3: 添加到 requirements.txt
+安装特定版本：
+
+```bash
+pip install harmonicgalaxy==0.1.0
+```
+
+### 方式 3: 本地开发模式安装
+
+如果你在本地开发 HarmonicGalaxy，可以使用开发模式安装：
+
+```bash
+# 克隆仓库
+git clone https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git
+cd HarmonicGalaxy
+
+# 安装开发模式（代码变更会立即生效）
+pip install -e .
+```
+
+### 方式 4: 使用 requirements.txt
 
 在你的项目 `requirements.txt` 中添加：
 
-```txt
+```
 # 从 GitHub 安装
 harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
 
-# 或者安装本地版本
-# harmonicgalaxy @ file:///path/to/HarmonicGalaxy
+# 或发布后从 PyPI 安装
+harmonicgalaxy>=0.1.0
 ```
 
 然后安装：
@@ -55,9 +73,9 @@ harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/
 pip install -r requirements.txt
 ```
 
-### 方式 4: 添加到 pyproject.toml（推荐）
+### 方式 5: 使用 pyproject.toml（现代 Python 项目）
 
-如果你的项目使用 `pyproject.toml`：
+在你的项目的 `pyproject.toml` 中添加：
 
 ```toml
 [project]
@@ -66,7 +84,7 @@ dependencies = [
 ]
 ```
 
-或者使用可选依赖：
+或使用可选依赖：
 
 ```toml
 [project.optional-dependencies]
@@ -75,17 +93,17 @@ harmonicgalaxy = [
 ]
 ```
 
-### 方式 5: 从 PyPI 安装（发布后）
+## 快速开始
 
-当 HarmonicGalaxy 发布到 PyPI 后：
+### 1. 安装依赖
 
 ```bash
 pip install harmonicgalaxy
 ```
 
-## 基本使用
+### 2. 基本使用
 
-### 1. 使用 LLM 客户端
+#### 使用 LLM 客户端
 
 ```python
 import asyncio
@@ -112,7 +130,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### 2. 使用日志系统
+#### 使用日志系统
 
 ```python
 from harmonicgalaxy import get_logger, setup_logging
@@ -122,17 +140,18 @@ from harmonicgalaxy.utils.logging import LoggingConfig
 config = LoggingConfig(theme="galaxy", level="INFO")
 setup_logging(config)
 
-# 获取 logger
-logger = get_logger(__name__)
-
 # 使用日志
-logger.info("⭐ 项目启动")
-logger.mission_start("process_data", dataset="large.csv")
+logger = get_logger(__name__)
+logger.info("⭐ 使用 HarmonicGalaxy 日志系统")
+logger.mission_start("my_mission", target="test")
 ```
 
-### 3. 完整示例
+## 在你的项目中集成
+
+### 示例：创建一个使用 HarmonicGalaxy 的简单应用
 
 ```python
+# my_app.py
 import asyncio
 from harmonicgalaxy import (
     create_client,
@@ -148,138 +167,160 @@ setup_logging()
 
 logger = get_logger(__name__)
 
-async def process_with_llm():
-    logger.mission_start("data_analysis")
+async def process_with_llm(text: str, provider: str = "openai"):
+    """使用 LLM 处理文本"""
+    logger.info(f"Processing text with {provider}")
     
-    # 创建 LLM 客户端
+    # 创建客户端
     config = LLMConfig(
-        provider=LLMProvider.OPENAI,
-        model="gpt-4",
+        provider=LLMProvider(provider),
+        model="gpt-4" if provider == "openai" else "claude-3-opus-20240229",
         api_key="your-api-key",
     )
+    
     client = create_client(config)
     
-    # 处理数据
+    # 发送请求
     messages = [
-        LLMMessage(role="system", content="You are a data analyst."),
-        LLMMessage(role="user", content="Analyze this data: ..."),
+        LLMMessage(role="user", content=text)
     ]
     
     response = await client.chat(messages)
-    logger.info(f"分析结果: {response.content}")
+    logger.info("Processing completed")
     
-    logger.mission_complete("data_analysis")
+    return response.content
 
-asyncio.run(process_with_llm())
+if __name__ == "__main__":
+    result = asyncio.run(process_with_llm("What is Python?"))
+    print(result)
 ```
 
-## 配置环境变量
+### 示例：在 requirements.txt 中指定
 
-可以通过环境变量配置，避免在代码中硬编码：
-
-```bash
-# LLM API Keys
-export OPENAI_API_KEY="your-openai-key"
-export ANTHROPIC_API_KEY="your-anthropic-key"
-export DASHSCOPE_API_KEY="your-dashscope-key"
-
-# 日志配置
-export HARMONICGALAXY_LOG_LEVEL=INFO
-export HARMONICGALAXY_LOG_THEME=galaxy
+```txt
+# requirements.txt
+harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
 ```
 
-然后在代码中可以不指定 `api_key`（如果 SDK 支持从环境变量读取）。
+### 示例：在 pyproject.toml 中指定
+
+```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+dependencies = [
+    "harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev",
+]
+```
 
 ## 依赖说明
 
-安装 HarmonicGalaxy 会自动安装以下依赖：
+HarmonicGalaxy 会自动安装以下依赖：
 
-- `openai >= 1.0.0` - OpenAI SDK
-- `anthropic >= 0.18.0` - Anthropic SDK
-- `dashscope >= 1.17.0` - DashScope/Qwen SDK
+- `openai >= 1.0.0` - OpenAI API 支持
+- `anthropic >= 0.18.0` - Anthropic API 支持
+- `dashscope >= 1.17.0` - Qwen/DashScope API 支持
 
-## 版本兼容性
+**注意**: 即使你只使用其中一个提供商，所有依赖都会被安装。如果希望减少依赖，可以考虑：
 
-- **Python**: 3.10, 3.11, 3.12, 3.13
-- **操作系统**: Linux, macOS, Windows
+1. 只安装需要的提供商 SDK
+2. 使用可选依赖（未来版本可能支持）
 
-## 常见问题
+## 环境变量配置
 
-### Q: 如何只使用特定功能？
+### LLM API Keys
 
-HarmonicGalaxy 的模块是独立的，你可以只导入需要的部分：
+```bash
+export OPENAI_API_KEY="your-openai-key"
+export ANTHROPIC_API_KEY="your-anthropic-key"
+export DASHSCOPE_API_KEY="your-dashscope-key"
+```
+
+### 日志配置
+
+```bash
+export HARMONICGALAXY_LOG_LEVEL=INFO
+export HARMONICGALAXY_LOG_THEME=galaxy
+export HARMONICGALAXY_LOG_DIR=./logs
+```
+
+## 验证安装
+
+安装后可以验证：
 
 ```python
-# 只使用 LLM 客户端
-from harmonicgalaxy.llm import create_client, LLMConfig, LLMProvider
+import harmonicgalaxy
 
-# 只使用日志系统
-from harmonicgalaxy.utils.logging import get_logger, setup_logging
+print(f"HarmonicGalaxy version: {harmonicgalaxy.__version__}")
+
+# 测试导入
+from harmonicgalaxy import create_client, LLMProvider, get_logger
+print("✓ All imports successful")
 ```
 
-### Q: 如何避免安装不需要的 LLM SDK？
+## 更新 HarmonicGalaxy
 
-目前所有 LLM SDK 都是核心依赖。如果未来版本支持可选依赖，可以这样安装：
+### 从 GitHub 更新
 
 ```bash
-# 只安装基础功能（未来版本）
-pip install harmonicgalaxy[core]
-
-# 安装特定提供商（未来版本）
-pip install harmonicgalaxy[openai]
-pip install harmonicgalaxy[anthropic]
-pip install harmonicgalaxy[qwen]
-```
-
-### Q: 如何在 Docker 中使用？
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# 安装 HarmonicGalaxy
-RUN pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
-
-# 复制你的代码
-COPY . .
-
-# 运行
-CMD ["python", "app.py"]
-```
-
-### Q: 如何更新到最新版本？
-
-```bash
-# 从 GitHub 更新
 pip install --upgrade git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+```
 
-# 从 PyPI 更新（发布后）
+### 从 PyPI 更新
+
+```bash
 pip install --upgrade harmonicgalaxy
 ```
 
-## 开发模式安装
+## 常见问题
 
-如果你想修改 HarmonicGalaxy 的源码：
+### Q: 安装时提示找不到包？
+
+确保：
+1. 网络连接正常（GitHub 可访问）
+2. 已安装 git
+3. 使用正确的 URL 和分支名
+
+### Q: 如何只安装特定功能？
+
+目前所有功能都包含在一个包中。未来可能会支持可选依赖：
 
 ```bash
-# 克隆仓库
-git clone https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git
-cd HarmonicGalaxy
-
-# 安装开发依赖
-pip install -e ".[dev]"
-
-# 在你的项目中安装本地版本
-cd /path/to/your/project
-pip install -e /path/to/HarmonicGalaxy
+# 未来可能的用法
+pip install harmonicgalaxy[llm]
+pip install harmonicgalaxy[logging]
 ```
 
-这样修改 HarmonicGalaxy 源码后，你的项目会自动使用最新版本。
+### Q: 在虚拟环境中安装
+
+```bash
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 安装
+pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+```
+
+### Q: 与现有项目冲突？
+
+HarmonicGalaxy 使用独立的命名空间，不会与其他项目冲突。如果遇到依赖冲突：
+
+1. 检查 Python 版本（需要 3.10+）
+2. 使用虚拟环境隔离
+3. 检查依赖版本兼容性
 
 ## 下一步
 
-- 查看 [LLM 客户端文档](LLM_CLIENT.md) 了解详细用法
-- 查看 [日志系统文档](LOGGING.md) 了解日志配置
-- 查看 [开发指南](DEVELOPMENT.md) 了解如何贡献代码
+安装完成后，可以：
 
+1. 查看 [LLM 客户端文档](LLM_CLIENT.md) 了解如何使用 LLM 功能
+2. 查看 [日志系统文档](LOGGING.md) 了解日志配置
+3. 查看 [开发指南](DEVELOPMENT.md) 了解如何贡献代码
+4. 查看 `examples/` 目录中的示例代码
+
+## 支持
+
+如有问题，请：
+- 查看 [GitHub Issues](https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy/issues)
+- 阅读 [文档](https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy#readme)

@@ -34,6 +34,18 @@ This project is intended to be the **gravitational core** of future CINT product
 
 ### Installation
 
+**For using HarmonicGalaxy in your project:**
+
+```bash
+# Install from GitHub (recommended for now)
+pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+
+# Or add to your requirements.txt:
+# harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+```
+
+**For developing HarmonicGalaxy:**
+
 ```bash
 # Clone the repository
 git clone https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git
@@ -49,6 +61,8 @@ pip install -e ".[dev]"
 # Install pre-commit hooks
 pre-commit install
 ```
+
+See [Installation Guide](docs/INSTALLATION.md) for more details.
 
 ### Development
 

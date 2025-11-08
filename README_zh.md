@@ -33,6 +33,18 @@
 
 ### 安装
 
+**在其他项目中使用 HarmonicGalaxy：**
+
+```bash
+# 从 GitHub 安装（推荐）
+pip install git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+
+# 或添加到 requirements.txt:
+# harmonicgalaxy @ git+https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git@dev
+```
+
+**开发 HarmonicGalaxy：**
+
 ```bash
 # 克隆仓库
 git clone https://github.com/Constellation-Intelligence-Technologies/HarmonicGalaxy.git
@@ -48,6 +60,8 @@ pip install -e ".[dev]"
 # 安装 pre-commit hooks
 pre-commit install
 ```
+
+更多安装方式请查看 [安装指南](docs/INSTALLATION.md)。
 
 ### 开发
 

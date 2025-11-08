@@ -1,0 +1,2 @@
+"""Core components of HarmonicGalaxy."""
+
